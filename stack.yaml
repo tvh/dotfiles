@@ -1,0 +1,14 @@
+flags:
+  xmonad:
+    small_base: true
+    testing: false
+  xmonad-extras:
+    with_mpd: false
+packages:
+- vendor/xmonad/
+- vendor/xmonad-contrib/
+- vendor/xmonad-extras/
+extra-deps:
+- X11-xft-0.3.1
+- libxml-sax-0.7.5
+resolver: nightly-2015-07-07

@@ -1,0 +1,33 @@
+
+# Load resources
+ 
+xrdb -merge .Xresources
+~/bin/msu
+
+ 
+# Set up an icon tray
+ 
+# sleep 10 && xfce4-panel --disable-wm-check &
+
+# Set the background color<
+ 
+xsetroot -solid midnightblue
+
+# Fire up apps
+
+/usr/bin/start-pulseaudio-x11
+
+chromium &
+dropboxd &
+thunderbird &
+thunar --daemon &
+
+eval $(gnome-keyring-daemon --start --components=ssh)
+export GNOME_KEYRING_SOCKET
+export SSH_AUTH_SOCK
+
+export DE='xfce'
+
+if [ -x /usr/bin/nm-applet ] ; then
+   nm-applet --sm-disable &
+fi
