@@ -21,6 +21,7 @@ chromium &
 dropboxd &
 thunderbird &
 thunar --daemon &
+/usr/bin/xscreensaver -no-splash &
 
 eval $(gnome-keyring-daemon --start --components=ssh)
 export GNOME_KEYRING_SOCKET
