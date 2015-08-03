@@ -9,7 +9,13 @@
 (add-to-list 'package-archives
   '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives
+  '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives
   '("org" . "http://orgmode.org/elpa/") t)
+(setq package-archive-priorities
+      '(("melpa-stable" . 20)
+        ("gnu" . 10)
+        ("melpa" . 0)))
 (package-initialize)
 
 ;exec-path
@@ -244,3 +250,10 @@ See URL `http://www.haskell.org/ghc/'."
 (add-to-list 'load-path "/home/tvh/.emacs.d/rust-mode/")
 (autoload 'rust-mode "rust-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+
+;scala
+(when (not (package-installed-p 'ensime))
+  (package-refresh-contents)
+  (package-install 'ensime))
+(require 'ensime)
+(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
