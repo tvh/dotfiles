@@ -12,6 +12,7 @@ import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
+import XMonad.Hooks.SetWMName
 import XMonad.Layout.Grid
 import XMonad.Layout.MultiColumns
 import XMonad.Layout.NoBorders
@@ -83,20 +84,26 @@ main = do
     dbus <- D.connectSession
     getWellKnownName dbus
     spawn "xfce4-panel --disable-wm-check"
-    xmonad $ ewmh $ defaultConfig
+    xmonad $ defaultConfig
         { manageHook = manageSpawn <> manageDocks <> manageHook defaultConfig <> myManageHook
         , layoutHook = smartBorders . avoidStruts $
 --                       onWorkspace "1" Grid $
 --                       onWorkspace "3" (Tall 1 (3/100) (6/7)) $
                        (multiCol [1] 0 0.01 (-0.5) ||| layoutHook defaultConfig)
-        , logHook = dynamicLogWithPP (prettyPrinter dbus)
+        , logHook = do
+            dynamicLogWithPP (prettyPrinter dbus)
+            ewmhDesktopsLogHook
         , modMask = mod4Mask     -- Rebind Mod to the Windows key
         , terminal = "xfce4-terminal"
-        , handleEventHook    = fullscreenEventHook
+        , handleEventHook = do
+            fullscreenEventHook
+            ewmhDesktopsEventHook
         , startupHook = do
             spawn "xfce4-power-manager"
             spawnOn "1" "xfce4-terminal -x weechat"
             spawn "hipchat"
+            ewmhDesktopsStartup
+            setWMName "LG3D"
         } `additionalKeys`
         [ ((mod4Mask .|. shiftMask, xK_z), spawn "xscreensaver-command --lock")
         , ((controlMask, xK_Print), spawn "sleep 0.2; scrot -s")
