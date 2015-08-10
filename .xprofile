@@ -17,6 +17,7 @@ xsetroot -solid midnightblue
 
 /usr/bin/start-pulseaudio-x11
 
+pidgin &
 chromium &
 dropboxd &
 thunderbird &

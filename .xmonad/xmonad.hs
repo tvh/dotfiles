@@ -100,7 +100,6 @@ main = do
             ewmhDesktopsEventHook
         , startupHook = do
             spawn "xfce4-power-manager"
-            spawnOn "1" "xfce4-terminal -x weechat"
             spawn "hipchat"
             ewmhDesktopsStartup
             setWMName "LG3D"
