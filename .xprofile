@@ -19,7 +19,7 @@ xsetroot -solid midnightblue
 
 pidgin &
 chromium &
-dropboxd &
+dropbox &
 thunderbird &
 thunar --daemon &
 /usr/bin/xscreensaver -no-splash &
