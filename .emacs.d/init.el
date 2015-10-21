@@ -246,14 +246,46 @@ See URL `http://www.haskell.org/ghc/'."
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
-;rust
-(add-to-list 'load-path "/home/tvh/.emacs.d/rust-mode/")
-(autoload 'rust-mode "rust-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
-
 ;scala
 (when (not (package-installed-p 'ensime))
   (package-refresh-contents)
   (package-install 'ensime))
 (require 'ensime)
 (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+
+;;rust
+(when (not (package-installed-p 'company-racer))
+  (package-refresh-contents)
+  (package-install 'company-racer))
+(require 'company-racer)
+(when (not (package-installed-p 'racer))
+  (package-refresh-contents)
+  (package-install 'racer))
+(require 'racer)
+(when (not (package-installed-p 'flycheck-rust))
+  (package-refresh-contents)
+  (package-install 'flycheck-rust))
+(require 'flycheck-rust)
+(when (not (package-installed-p 'rust-mode))
+  (package-refresh-contents)
+  (package-install 'rust-mode))
+(require 'rust-mode)
+
+;; Set path to rust src directory
+(setq racer-rust-src-path "/usr/src/rust/src/")
+(setenv "RUST_SRC_PATH" racer-rust-src-path)
+
+;; Load rust-mode when you open `.rs` files
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+
+;; Setting up configurations when you load rust-mode
+(add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+
+(add-hook 'rust-mode-hook #'racer-mode)
+(add-hook 'racer-mode-hook #'eldoc-mode)
+
+(with-eval-after-load 'company
+      (add-to-list 'company-backends 'company-racer))
+
+(global-set-key (kbd "TAB") #'company-indent-or-complete-common) ;
+(setq company-tooltip-align-annotations t)
