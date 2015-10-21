@@ -101,6 +101,7 @@ main = do
         , startupHook = do
             spawn "xfce4-power-manager"
             spawn "hipchat"
+            spawn "slack"
             ewmhDesktopsStartup
             setWMName "LG3D"
         } `additionalKeys`
@@ -121,7 +122,7 @@ myManageHook = composeAll . concat $
     , [ className   =? c --> doFloat           | c <- myFloats]
     , [ title       =? t --> doFloat           | t <- myOtherFloats]
     , [ className   =? c --> doF (W.shift "2") | c <- webApps]
-    , [ title       =? c --> doF (W.shift "1") | c <- chatApps]
+    , [ className   =? c --> doF (W.shift "1") | c <- chatApps]
     , [ className   =? c --> doF (W.shift "3") | c <- mailApps]
     ]
 -- (Use the command xprop | grep WM_NAME to get the title property.)
