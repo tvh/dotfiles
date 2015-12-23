@@ -94,7 +94,7 @@ main = do
             dynamicLogWithPP (prettyPrinter dbus)
             ewmhDesktopsLogHook
         , modMask = mod4Mask     -- Rebind Mod to the Windows key
-        , terminal = "xfce4-terminal"
+        , terminal = "gnome-terminal"
         , handleEventHook = do
             fullscreenEventHook
             ewmhDesktopsEventHook
