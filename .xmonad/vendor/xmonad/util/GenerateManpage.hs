@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 -- Unlike the rest of xmonad, this file is copyright under the terms of the
 -- GPL.
 
@@ -12,7 +13,7 @@
 -- Format for the docstrings in Config.hs takes the following form:
 --
 -- -- mod-x %! Frob the whatsit
--- 
+--
 -- "Frob the whatsit" will be used as the description for keybinding "mod-x"
 --
 -- If the keybinding name is omitted, it will try to guess from the rest of the
@@ -34,7 +35,7 @@ import Distribution.PackageDescription
 import Text.PrettyPrint.HughesPJ
 import Distribution.Text
 
-import Text.Pandoc -- works with 1.6
+import Text.Pandoc -- works with 1.15.x
 
 releaseDate = "31 December 2012"
 
@@ -43,7 +44,7 @@ trim = reverse . dropWhile isSpace . reverse . dropWhile isSpace
 
 guessKeys line = concat $ intersperse "-" (modifiers ++ [map toLower key])
     where modifiers = map (!!1) (line =~ "(mod|shift|control)Mask")
-          (_, _, _, [key]) = line =~ "xK_(\\w+)" :: (String, String, String, [String])
+          (_, _, _, [key]) = line =~ "xK_([_[:alnum:]]+)" :: (String, String, String, [String])
 
 binding :: [String] -> (String, String)
 binding [ _, bindingLine, "", desc ] = (guessKeys bindingLine, desc)
@@ -65,12 +66,11 @@ main = do
     releaseName <- (show . disp . package . packageDescription)
                     `liftM`readPackageDescription normal "xmonad.cabal"
     keybindings <- (intercalate "\n\n" . map markdownDefn . allBindings)
-                    `liftM` readFile "./XMonad/Config.hs"
+                    `liftM` readFile "./src/XMonad/Config.hs"
 
     let manHeader = unwords [".TH xmonad 1","\""++releaseDate++"\"",releaseName,"\"xmonad manual\""]
-        writeOpts = defaultWriterOptions -- { writerLiterateHaskell = True }
 
-    parsed <- readMarkdown defaultParserState { stateLiterateHaskell = True }
+    Right parsed <- readMarkdown def
         . unlines
         . replace "___KEYBINDINGS___" keybindings
         . lines
@@ -79,13 +79,13 @@ main = do
     Right template <- getDefaultTemplate Nothing "man"
     writeFile "./man/xmonad.1"
         . (manHeader ++)
-        . writeMan writeOpts{ writerStandalone = True, writerTemplate = template }
+        . writeMan def{ writerStandalone = True, writerTemplate = template }
         $ parsed
     putStrLn "Documentation created: man/xmonad.1"
 
     Right template <- getDefaultTemplate Nothing "html"
     writeFile "./man/xmonad.1.html"
-        . writeHtmlString writeOpts
+        . writeHtmlString def
             { writerVariables =
                         [("include-before"
                             ,"<h1>"++releaseName++"</h1>"++

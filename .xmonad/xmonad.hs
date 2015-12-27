@@ -41,7 +41,7 @@ toggleMute' = do
         True -> return 0
 
 prettyPrinter :: D.Client -> PP
-prettyPrinter dbus = defaultPP
+prettyPrinter dbus = def
     { ppOutput   = dbusOutput dbus
     , ppTitle    = pangoSanitize
     , ppCurrent  = pangoColor "green" . wrap "[" "]" . pangoSanitize
@@ -84,12 +84,12 @@ main = do
     dbus <- D.connectSession
     getWellKnownName dbus
     spawn "xfce4-panel --disable-wm-check"
-    xmonad $ defaultConfig
-        { manageHook = manageSpawn <> manageDocks <> manageHook defaultConfig <> myManageHook
+    xmonad $ def
+        { manageHook = manageSpawn <> manageDocks <> manageHook def <> myManageHook
         , layoutHook = smartBorders . avoidStruts $
 --                       onWorkspace "1" Grid $
 --                       onWorkspace "3" (Tall 1 (3/100) (6/7)) $
-                       (multiCol [1] 0 0.01 (-0.5) ||| layoutHook defaultConfig)
+                       (multiCol [1] 0 0.01 (-0.5) ||| layoutHook def)
         , logHook = do
             dynamicLogWithPP (prettyPrinter dbus)
             ewmhDesktopsLogHook

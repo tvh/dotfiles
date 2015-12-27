@@ -1,5 +1,5 @@
 name:               xmonad
-version:            0.11.1
+version:            0.12
 homepage:           http://xmonad.org
 synopsis:           A tiling window manager
 description:
@@ -17,33 +17,39 @@ license:            BSD3
 license-file:       LICENSE
 author:             Spencer Janssen
 maintainer:         xmonad@haskell.org
-extra-source-files: README TODO CONFIG STYLE tests/loc.hs tests/Properties.hs
+extra-source-files: README.md CHANGES.md TODO CONFIG STYLE
+                    tests/*.hs
+                    tests/Properties/*.hs
+                    tests/Properties/Layout/*.hs
                     man/xmonad.1.markdown man/xmonad.1 man/xmonad.1.html
                     util/GenerateManpage.hs
-cabal-version:      >= 1.6
-bug-reports:        http://code.google.com/p/xmonad/issues/list
+                    util/hpcReport.sh
+cabal-version:      >= 1.8
+bug-reports:        https://github.com/xmonad/xmonad/issues
 build-type:         Simple
 
-tested-with:        GHC==7.6.1,
-                    GHC==7.4.1,
-                    GHC==7.2.1,
-                    GHC==6.12.3,
-                    GHC==6.10.4
+tested-with:
+                    GHC==7.6.3,
+                    GHC==7.8.4,
+                    GHC==7.10.2
 
 data-files:         man/xmonad.hs, man/xmonad.1, man/xmonad.1.html
 
 source-repository head
-  type:     darcs
-  location: http://code.haskell.org/xmonad
-
-flag small_base
-    description: Choose the new smaller, split-up base package.
+  type:     git
+  location: https://github.com/xmonad/xmonad
 
 flag testing
     description: Testing mode, only build minimal components
     default: False
 
+flag generatemanpage
+    description: Build the tool for generating the man page
+    default: False
+    manual: True
+
 library
+    hs-source-dirs:     src
     exposed-modules:    XMonad
                         XMonad.Main
                         XMonad.Core
@@ -52,50 +58,68 @@ library
                         XMonad.ManageHook
                         XMonad.Operations
                         XMonad.StackSet
+    other-modules:      Paths_xmonad
 
-    if flag(small_base)
-        build-depends: base < 5 && >=3, containers, directory, process, filepath, extensible-exceptions
-    else
-        build-depends: base < 3
-    build-depends: X11>=1.5 && < 1.7, mtl, unix,
-                   utf8-string >= 0.3
+    build-depends: base < 5 && >=3,
+                   containers,
+                   data-default,
+                   directory,
+                   extensible-exceptions,
+                   filepath,
+                   setlocale,
+                   mtl,
+                   process,
+                   unix,
+                   utf8-string >= 0.3 && < 1.1,
+                   X11>=1.5 && < 1.7
 
     if true
         ghc-options:        -funbox-strict-fields -Wall
 
     if impl(ghc >= 6.12.1)
         ghc-options:        -fno-warn-unused-do-bind
+    if impl(ghc < 7.0.0)
+        extensions: UndecidableInstances
+        -- needed for XMonad.Config's instance Default (XConfig a)
+
 
     ghc-prof-options:   -prof -auto-all
-    extensions:         CPP
 
     if flag(testing)
         buildable: False
 
 executable xmonad
-    main-is:            Main.hs
-    other-modules:      XMonad
-                        XMonad.Main
-                        XMonad.Core
-                        XMonad.Config
-                        XMonad.Layout
-                        XMonad.ManageHook
-                        XMonad.Operations
-                        XMonad.StackSet
-
-    if true 
-        ghc-options:    -funbox-strict-fields -Wall
-
+    main-is:        Main.hs
+    build-depends:  base,
+                    mtl,
+                    unix,
+                    X11,
+                    xmonad
+    ghc-options:    -Wall
     if impl(ghc >= 6.12.1)
-        ghc-options:    -fno-warn-unused-do-bind
+        ghc-options:  -Wall -fno-warn-unused-do-bind
 
-    ghc-prof-options:   -prof -auto-all
-    extensions:         CPP
+executable generatemanpage
+    main-is: GenerateManpage.hs
+    hs-source-dirs: util
+    if flag(generatemanpage)
+        build-depends: base,
+                       Cabal,
+                       pandoc,
+                       pretty,
+                       regex-posix
+    else
+        buildable: False
 
-    if flag(testing)
-        cpp-options:    -DTESTING
-        hs-source-dirs: . tests/
-        build-depends:  QuickCheck < 2
-        ghc-options:    -Werror
-    if flag(testing) && flag(small_base)
-        build-depends:  filepath, process, directory, mtl, unix, X11, base, containers, random, extensible-exceptions
+
+-- note util/hpcReport.sh
+test-suite properties
+    type: exitcode-stdio-1.0
+    hs-source-dirs: tests
+    build-depends:  base,
+                    containers,
+                    extensible-exceptions,
+                    QuickCheck >= 2,
+                    X11,
+                    xmonad
+    main-is: Properties.hs

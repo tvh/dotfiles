@@ -1,4 +1,5 @@
-{-# OPTIONS -fno-warn-missing-signatures #-}
+{-# OPTIONS_GHC -fno-warn-missing-signatures -fno-warn-orphans #-}
+{-# LANGUAGE TypeFamilies #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  XMonad.Config
@@ -13,13 +14,13 @@
 --
 -- DO NOT MODIFY THIS FILE!  It won't work.  You may configure xmonad
 -- by providing your own @~\/.xmonad\/xmonad.hs@ that overrides
--- specific fields in 'defaultConfig'.  For a starting point, you can
+-- specific fields in the default config, 'def'.  For a starting point, you can
 -- copy the @xmonad.hs@ found in the @man@ directory, or look at
 -- examples on the xmonad wiki.
 --
 ------------------------------------------------------------------------
 
-module XMonad.Config (defaultConfig) where
+module XMonad.Config (defaultConfig, Default(..)) where
 
 --
 -- Useful imports
@@ -27,17 +28,18 @@ module XMonad.Config (defaultConfig) where
 import XMonad.Core as XMonad hiding
     (workspaces,manageHook,keys,logHook,startupHook,borderWidth,mouseBindings
     ,layoutHook,modMask,terminal,normalBorderColor,focusedBorderColor,focusFollowsMouse
-    ,handleEventHook,clickJustFocuses)
+    ,handleEventHook,clickJustFocuses,rootMask,clientMask)
 import qualified XMonad.Core as XMonad
     (workspaces,manageHook,keys,logHook,startupHook,borderWidth,mouseBindings
     ,layoutHook,modMask,terminal,normalBorderColor,focusedBorderColor,focusFollowsMouse
-    ,handleEventHook,clickJustFocuses)
+    ,handleEventHook,clickJustFocuses,rootMask,clientMask)
 
 import XMonad.Layout
 import XMonad.Operations
 import XMonad.ManageHook
 import qualified XMonad.StackSet as W
 import Data.Bits ((.|.))
+import Data.Default
 import Data.Monoid
 import qualified Data.Map as M
 import System.Exit
@@ -90,7 +92,7 @@ focusedBorderColor = "red"  -- "#ff0000" don't use hex, not <24 bit safe
 manageHook :: ManageHook
 manageHook = composeAll
                 [ className =? "MPlayer"        --> doFloat
-                , className =? "Gimp"           --> doFloat ]
+                , className =? "mplayer2"       --> doFloat ]
 
 ------------------------------------------------------------------------
 -- Logging
@@ -144,6 +146,19 @@ layout = tiled ||| Mirror tiled ||| Full
 
      -- Percent of screen to increment by when resizing panes
      delta   = 3/100
+
+------------------------------------------------------------------------
+-- Event Masks:
+
+-- | The client events that xmonad is interested in
+clientMask :: EventMask
+clientMask = structureNotifyMask .|. enterWindowMask .|. propertyChangeMask
+
+-- | The root events that xmonad is interested in
+rootMask :: EventMask
+rootMask =  substructureRedirectMask .|. substructureNotifyMask
+        .|. enterWindowMask .|. leaveWindowMask .|. structureNotifyMask
+        .|. buttonPressMask
 
 ------------------------------------------------------------------------
 -- Key bindings:
@@ -237,8 +252,8 @@ mouseBindings (XConfig {XMonad.modMask = modMask}) = M.fromList
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
     ]
 
--- | The default set of configuration values itself
-defaultConfig = XConfig
+instance (a ~ Choose Tall (Choose (Mirror Tall) Full)) => Default (XConfig a) where
+  def = XConfig
     { XMonad.borderWidth        = borderWidth
     , XMonad.workspaces         = workspaces
     , XMonad.layoutHook         = layout
@@ -254,7 +269,17 @@ defaultConfig = XConfig
     , XMonad.handleEventHook    = handleEventHook
     , XMonad.focusFollowsMouse  = focusFollowsMouse
     , XMonad.clickJustFocuses       = clickJustFocuses
+    , XMonad.clientMask         = clientMask
+    , XMonad.rootMask           = rootMask
+    , XMonad.handleExtraArgs = \ xs theConf -> case xs of
+                [] -> return theConf
+                _ -> fail ("unrecognized flags:" ++ show xs)
     }
+
+-- | The default set of configuration values itself
+{-# DEPRECATED defaultConfig "Use def (from Data.Default, and re-exported by XMonad and XMonad.Config) instead." #-}
+defaultConfig :: XConfig (Choose Tall (Choose (Mirror Tall) Full))
+defaultConfig = def
 
 -- | Finally, a copy of the default bindings in simple textual tabular format.
 help :: String

@@ -31,12 +31,13 @@ module XMonad.Core (
 
 import XMonad.StackSet hiding (modify)
 
-import Prelude hiding ( catch )
-import Codec.Binary.UTF8.String (encodeString)
-import Control.Exception.Extensible (catch, fromException, try, bracket, throw, finally, SomeException(..))
+import Prelude
+import Control.Exception.Extensible (fromException, try, bracket, throw, finally, SomeException(..))
+import qualified Control.Exception.Extensible as E
 import Control.Applicative
 import Control.Monad.State
 import Control.Monad.Reader
+import Data.Default
 import System.FilePath
 import System.IO
 import System.Info
@@ -111,6 +112,10 @@ data XConfig l = XConfig
     , startupHook        :: !(X ())              -- ^ The action to perform on startup
     , focusFollowsMouse  :: !Bool                -- ^ Whether window entry events can change focus
     , clickJustFocuses   :: !Bool                -- ^ False to make a click which changes focus to be additionally passed to the window
+    , clientMask         :: !EventMask           -- ^ The client events that xmonad is interested in
+    , rootMask           :: !EventMask           -- ^ The root events that xmonad is interested in
+    , handleExtraArgs    :: !([String] -> XConfig Layout -> IO (XConfig Layout))
+                                                 -- ^ Modify the configuration, complain about extra arguments etc. with arguments that are not handled by default
     }
 
 
@@ -147,6 +152,9 @@ instance (Monoid a) => Monoid (X a) where
     mempty  = return mempty
     mappend = liftM2 mappend
 
+instance Default a => Default (X a) where
+    def = return def
+
 type ManageHook = Query (Endo WindowSet)
 newtype Query a = Query (ReaderT Window X a)
     deriving (Functor, Applicative, Monad, MonadReader Window, MonadIO)
@@ -157,6 +165,9 @@ runQuery (Query m) w = runReaderT m w
 instance Monoid a => Monoid (Query a) where
     mempty  = return mempty
     mappend = liftM2 mappend
+
+instance Default a => Default (Query a) where
+    def = return def
 
 -- | Run the 'X' monad, given a chunk of 'X' monad code, and an initial state
 -- Return the result, and final state
@@ -169,7 +180,7 @@ catchX :: X a -> X a -> X a
 catchX job errcase = do
     st <- get
     c <- ask
-    (a, s') <- io $ runX c st job `catch` \e -> case fromException e of
+    (a, s') <- io $ runX c st job `E.catch` \e -> case fromException e of
                         Just x -> throw e `const` (x `asTypeOf` ExitSuccess)
                         _ -> do hPrint stderr e; runX c st errcase
     put s'
@@ -183,7 +194,7 @@ userCode a = catchX (Just `liftM` a) (return Nothing)
 -- | Same as userCode but with a default argument to return instead of using
 -- Maybe, provided for convenience.
 userCodeDef :: a -> X a -> X a
-userCodeDef def a = fromMaybe def `liftM` userCode a
+userCodeDef defValue a = fromMaybe defValue `liftM` userCode a
 
 -- ---------------------------------------------------------------------
 -- Convenient wrappers to state
@@ -385,7 +396,7 @@ io = liftIO
 -- | Lift an 'IO' action into the 'X' monad.  If the action results in an 'IO'
 -- exception, log the exception to stderr and continue normal execution.
 catchIO :: MonadIO m => IO () -> m ()
-catchIO f = io (f `catch` \(SomeException e) -> hPrint stderr e >> hFlush stderr)
+catchIO f = io (f `E.catch` \(SomeException e) -> hPrint stderr e >> hFlush stderr)
 
 -- | spawn. Launch an external application. Specifically, it double-forks and
 -- runs the 'String' you pass as a command to \/bin\/sh.
@@ -396,7 +407,7 @@ spawn x = spawnPID x >> return ()
 
 -- | Like 'spawn', but returns the 'ProcessID' of the launched application
 spawnPID :: MonadIO m => String -> m ProcessID
-spawnPID x = xfork $ executeFile "/bin/sh" False ["-c", encodeString x] Nothing
+spawnPID x = xfork $ executeFile "/bin/sh" False ["-c", x] Nothing
 
 -- | A replacement for 'forkProcess' which resets default signal handlers.
 xfork :: MonadIO m => IO () -> m ProcessID
@@ -460,7 +471,7 @@ recompile force = io $ do
         -- temporarily disable SIGCHLD ignoring:
         uninstallSignalHandlers
         status <- bracket (openFile err WriteMode) hClose $ \h ->
-            waitForProcess =<< runProcess "stack" ["ghc", "--", "--make", "xmonad.hs", "-i", "-ilib", "-fforce-recomp", "-v0", "-o",binn] (Just dir)
+            waitForProcess =<< runProcess "stack" ["exec", "ghc", "--", "--make", "xmonad.hs", "-i", "-ilib", "-fforce-recomp", "-main-is", "main", "-v0", "-o",binn] (Just dir)
                                     Nothing Nothing Nothing (Just h)
 
         -- re-enable SIGCHLD:
@@ -480,11 +491,11 @@ recompile force = io $ do
             return ()
         return (status == ExitSuccess)
       else return True
- where getModTime f = catch (Just <$> getModificationTime f) (\(SomeException _) -> return Nothing)
+ where getModTime f = E.catch (Just <$> getModificationTime f) (\(SomeException _) -> return Nothing)
        isSource = flip elem [".hs",".lhs",".hsc"] . takeExtension
        allFiles t = do
             let prep = map (t</>) . Prelude.filter (`notElem` [".",".."])
-            cs <- prep <$> catch (getDirectoryContents t) (\(SomeException _) -> return [])
+            cs <- prep <$> E.catch (getDirectoryContents t) (\(SomeException _) -> return [])
             ds <- filterM doesDirectoryExist cs
             concat . ((cs \\ ds):) <$> mapM allFiles ds
 

@@ -1,7 +1,4 @@
 flags:
-  xmonad:
-    small_base: true
-    testing: false
   xmonad-extras:
     with_mpd: false
 packages:
@@ -9,5 +6,7 @@ packages:
 extra-deps:
 - X11-xft-0.3.1
 - libxml-sax-0.7.5
+- xmonad-extras-0.12.1
+- xmonad-contrib-0.12
 resolver: lts-3.19
 
