@@ -28,22 +28,25 @@ Plug 'vim-pandoc/vim-pandoc', { 'for': 'markdown' }
 Plug 'vim-pandoc/vim-pandoc-syntax', { 'for': 'markdown' }
 
 "Rust
-Plug 'rust-lang/rust.vim', { 'for': 'rs' }
+Plug 'rust-lang/rust.vim', { 'for': 'rust' }
 
 "LaTeX
 Plug 'git://git.code.sf.net/p/vim-latex/vim-latex', { 'for': 'latex' }
 
 "JavaScript
-Plug 'pangloss/vim-javascript', { 'for': 'js' }
+Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
 
 "TypeScript
-Plug 'leafgarland/typescript-vim', { 'for': 'ts' }
+Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
 
 "HTML/CSS
 Plug 'mattn/emmet-vim', { 'for': ['html','css'] }
 
 "ORG
 Plug 'tpope/vim-speeddating' | Plug 'jceb/vim-orgmode', { 'for': 'org' }
+
+"Git
+Plug 'tpope/vim-git', {'for': ['git', 'gitcommit', 'gitconfig', 'gitrebase', 'gitsendemail']}
 
 " Add plugins to &runtimepath
 call plug#end()
