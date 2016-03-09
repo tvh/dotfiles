@@ -19,7 +19,7 @@ Plug 'bling/vim-airline'
 Plug 'tomasr/molokai'
 
 " Haskell
-Plug 'neovimhaskell/haskell-vim', { 'for': ['haskell','cabal'] }
+" Plug 'neovimhaskell/haskell-vim', { 'for': ['haskell','cabal'] }
 Plug 'Shougo/vimproc.vim', { 'do': 'make' } | Plug 'eagletmt/ghcmod-vim', { 'for': 'haskell' }
 Plug 'eagletmt/neco-ghc', { 'for': 'haskell' }
 
@@ -55,7 +55,10 @@ call plug#end()
 colorscheme molokai
 let g:rehash256 = 1
 
-let &colorcolumn=join(range(81,999),",")
+""" Whitespace
+exec "set listchars=tab:\uBB\uBB,trail:\uB7,nbsp:~"
+set list
+let &colorcolumn=join(range(101,999),",")
 
 """ Use deoplete (Autocompletion)
 let g:deoplete#enable_at_startup = 1
@@ -89,3 +92,4 @@ let g:tex_flavor='latex'
 
 """HTML/CSS
 let g:user_emmet_mode='a'
+
