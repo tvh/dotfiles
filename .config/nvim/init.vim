@@ -1,6 +1,7 @@
 filetype plugin indent on
 syntax enable
 set mouse=a
+set softtabstop=4 shiftwidth=4 expandtab
 
 " auto-install vim-plug
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
@@ -19,9 +20,14 @@ Plug 'bling/vim-airline'
 Plug 'tomasr/molokai'
 
 " Haskell
-" Plug 'neovimhaskell/haskell-vim', { 'for': ['haskell','cabal'] }
+Plug 'neovimhaskell/haskell-vim', { 'for': ['haskell','cabal'] }
 Plug 'Shougo/vimproc.vim', { 'do': 'make' } | Plug 'eagletmt/ghcmod-vim', { 'for': 'haskell' }
 Plug 'eagletmt/neco-ghc', { 'for': 'haskell' }
+Plug 'Twinside/vim-hoogle', { 'for': 'haskell' }
+Plug 'mpickering/hlint-refactor-vim', { 'for': 'haskell' }
+
+" Scala
+Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
 
 "Markdown
 Plug 'vim-pandoc/vim-pandoc', { 'for': 'markdown' }
@@ -72,12 +78,13 @@ let g:haskell_enable_pattern_synonyms = 1
 let g:haskell_enable_typeroles = 1
 let g:haskell_enable_static_pointers = 1
 
-let g:haskell_indent_if = 4
-let g:haskell_indent_case = 4
+let g:haskell_indent_if = 0
+let g:haskell_indent_case = 2
 let g:haskell_indent_let = 4
 let g:haskell_indent_where = 2
-let g:haskell_indent_do = 4
+let g:haskell_indent_do = 3
 let g:haskell_indent_in = 0
+let g:haskell_indent_guard = 4
 let g:cabal_indent_section = 2
 
 let g:haskellmode_completion_ghc = 0
@@ -85,7 +92,7 @@ autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
 
 let g:necoghc_enable_detailed_browse = 0
 
-autocmd BufWritePost *.hs GhcModCheckAndLintAsync
+autocmd BufWritePost *.hs GhcModCheckAsync
 
 """LaTeX
 let g:tex_flavor='latex'
