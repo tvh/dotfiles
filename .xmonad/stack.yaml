@@ -1,12 +1,15 @@
 flags:
   xmonad-extras:
     with_mpd: false
+    with_hint: false
 packages:
-- vendor/xmonad/
+- location:
+    git: git@github.com:tvh/xmonad.git
+    commit: e1afa7b7ab6958f610e69c276e4da0a49c850be2
+  extra-dep: true
+- '.'
 extra-deps:
 - X11-xft-0.3.1
-- libxml-sax-0.7.5
 - xmonad-extras-0.12.1
 - xmonad-contrib-0.12
-resolver: lts-3.19
-
+resolver: lts-5.15

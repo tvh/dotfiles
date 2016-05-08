@@ -1,0 +1,8 @@
+name: xmonad-user
+version: 0.1
+cabal-version: >= 1.22
+build-type: Simple
+executable xmonad-user
+    main-is:        xmonad.hs
+    build-depends:  xmonad, xmonad-extras, xmonad-contrib, base, X11, dbus
+    ghc-options:    -Wall
