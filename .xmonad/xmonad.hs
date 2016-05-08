@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 import Data.Monoid
 import XMonad
 import XMonad.Config.Kde
@@ -31,14 +29,17 @@ myManageHook :: ManageHook
 myManageHook = composeAll . concat $
     [ [ isFullscreen --> doFullFloat ]
     , [ className   =? c --> doFloat           | c <- myFloats]
-    , [ title       =? t --> doFloat           | t <- myOtherFloats]
-    , [ className   =? c --> doF (W.shift "2") | c <- webApps]
     , [ className   =? c --> doF (W.shift "1") | c <- chatApps]
+    , [ className   =? c --> doF (W.shift "2") | c <- webApps]
     , [ className   =? c --> doF (W.shift "3") | c <- mailApps]
+    , [ className   =? c --> doF (W.shift "5") | c <- mediaApps]
+    , [ className   =? c --> doF (W.shift "6") | c <- gameApps]
     ]
 -- (Use the command xprop | grep WM_NAME to get the title property.)
-  where myFloats      = ["MPlayer"]
-        myOtherFloats = ["alsamixer"]
-        webApps       = ["Firefox-bin", "Opera", "Chromium"] -- open on desktop 2
-        chatApps      = ["WeeChat", "Pidgin", "HipChat"]     -- open on desktop 1
-        mailApps      = ["Kmail", "Thunderbird"]             -- open on desktop 3
+  where
+      myFloats = ["MPlayer","Desktop"{-Volume change-}]
+      chatApps = ["WeeChat", "Pidgin", "HipChat"]
+      webApps = ["Firefox-bin", "Opera", "Chromium"]
+      mailApps = ["Kmail", "Thunderbird"]
+      gameApps = ["Steam"]
+      mediaApps = ["Spotify"]
