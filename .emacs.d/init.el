@@ -3,10 +3,28 @@
  'package-archives
  '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
-(package-refresh-contents)
+
+(setq inhibit-startup-message t)
+(require 'cl)
+
+(defvar prelude-packages
+  '(molokai-theme evil evil-org intero)
+  "A list of packages to ensure are installed at launch.")
+
+(defun prelude-packages-installed-p ()
+  (cl-every 'package-installed-p prelude-packages))
+
+(unless (prelude-packages-installed-p)
+  ;; check for new packages (package versions)
+  (message "%s" "Emacs Prelude is now refreshing its package database...")
+  (package-refresh-contents)
+  (message "%s" " done.")
+  ;; install the missing packages
+  (dolist (p prelude-packages)
+    (when (not (package-installed-p p))
+            (package-install p))))
 
 ;; Color Theme
-(package-install 'molokai-theme)
 (load-theme 'molokai t)
 
 ;; Enable mouse support
@@ -24,9 +42,7 @@
   )
 
 ;; Vim Keybindings
-(package-install 'evil)
 (evil-mode t)
 
 ;; Install Intero (Haskell)
-(package-install 'intero)
 (add-hook 'haskell-mode-hook 'intero-mode)
