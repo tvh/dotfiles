@@ -4,11 +4,13 @@
  '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 
+(menu-bar-mode -1)
+(tool-bar-mode -1)
 (setq inhibit-startup-message t)
 (require 'cl)
 
 (defvar prelude-packages
-  '(molokai-theme evil evil-org intero)
+  '(molokai-theme evil evil-org intero helm)
   "A list of packages to ensure are installed at launch.")
 
 (defun prelude-packages-installed-p ()
@@ -27,6 +29,9 @@
 ;; Color Theme
 (load-theme 'molokai t)
 
+;; Vim Keybindings
+(evil-mode t)
+
 ;; Enable mouse support
 (unless window-system
   (require 'mouse)
@@ -40,9 +45,6 @@
   (defun track-mouse (e))
   (setq mouse-sel-mode t)
   )
-
-;; Vim Keybindings
-(evil-mode t)
 
 ;; Install Intero (Haskell)
 (add-hook 'haskell-mode-hook 'intero-mode)
