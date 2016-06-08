@@ -11,7 +11,10 @@ endif
 
 call plug#begin()
 " Autocompletion
-Plug 'Shougo/deoplete.nvim'
+function! DoRemote(arg)
+  UpdateRemotePlugins
+endfunction
+Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote'), 'for': 'haskell' }
 
 " Status bar
 Plug 'bling/vim-airline'
@@ -92,7 +95,7 @@ autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
 
 let g:necoghc_enable_detailed_browse = 0
 
-autocmd BufWritePost *.hs GhcModCheckAsync
+""autocmd BufWritePost *.hs GhcModCheckAsync
 
 """LaTeX
 let g:tex_flavor='latex'
