@@ -10,7 +10,8 @@
 (require 'cl)
 
 (defvar prelude-packages
-  '(molokai-theme evil evil-org intero exec-path-from-shell benchmark-init)
+  '(molokai-theme evil evil-org intero exec-path-from-shell benchmark-init
+    company)
   "A list of packages to ensure are installed at launch.")
 
 (defun prelude-packages-installed-p ()
@@ -65,5 +66,9 @@
   (setq mouse-sel-mode t)
   )
 
-;; Install Intero (Haskell)
+;; Autocompletion
+(add-hook 'after-init-hook 'global-company-mode)
+
+;; Haskell
+(add-hook 'haskell-mode-hook (lambda () (setq whitespace-line-column 120)))
 (add-hook 'haskell-mode-hook 'intero-mode)
