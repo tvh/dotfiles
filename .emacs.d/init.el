@@ -30,6 +30,10 @@
 ;; Init Benchmark
 (benchmark-init/activate)
 
+;; Fix !!!STUPID!!! default Keybindings
+(define-key global-map [home] 'beginning-of-line)
+(define-key global-map [end] 'end-of-line)
+
 ;; Fix PATH
 (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize))
@@ -70,5 +74,9 @@
 (add-hook 'after-init-hook 'global-company-mode)
 
 ;; Haskell
-(add-hook 'haskell-mode-hook (lambda () (setq whitespace-line-column 120)))
+(add-hook 'haskell-mode-hook
+  (lambda ()
+    (setq whitespace-line-column 100)
+    (company-mode -1)
+    ))
 (add-hook 'haskell-mode-hook 'intero-mode)
