@@ -37,9 +37,9 @@ myManageHook = composeAll . concat $
     ]
 -- (Use the command xprop | grep WM_NAME to get the title property.)
   where
-      myFloats = ["MPlayer","Desktop"{-Volume change-}]
-      chatApps = ["WeeChat", "Pidgin", "HipChat"]
-      webApps = ["Firefox-bin", "Opera", "Chromium"]
-      mailApps = ["Kmail", "Thunderbird"]
+      myFloats = ["plasmashell"{-Volume change-}]
+      chatApps = []
+      webApps = ["google-chrome"]
+      mailApps = []
       gameApps = ["Steam"]
-      mediaApps = ["Spotify"]
+      mediaApps = ["spotify","Spotify"]
