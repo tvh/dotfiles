@@ -10,7 +10,7 @@ import XMonad.Layout.NoBorders
 import qualified XMonad.StackSet as W -- to shift and float windows
 
 main :: IO ()
-main = do
+main =
     xmonad $ kde4Config
         { manageHook = manageHook kde4Config <> myManageHook
         , layoutHook = smartBorders . avoidStruts $
