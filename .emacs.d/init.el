@@ -11,7 +11,7 @@
 
 (defvar prelude-packages
   '(molokai-theme evil evil-org intero exec-path-from-shell benchmark-init
-    company)
+    company tide)
   "A list of packages to ensure are installed at launch.")
 
 (defun prelude-packages-installed-p ()
@@ -77,6 +77,28 @@
 (add-hook 'haskell-mode-hook
   (lambda ()
     (setq whitespace-line-column 100)
-    (company-mode -1)
     ))
 (add-hook 'haskell-mode-hook 'intero-mode)
+
+;; Typescript
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save idle-change mode-enabled))
+  (eldoc-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+;; format options
+(setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
+
+;; JS
+(add-hook 'js2-mode-hook #'setup-tide-mode)
