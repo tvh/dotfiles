@@ -171,7 +171,8 @@ exec_always --no-startup-id sleep 10 && xmodmap /home/tvh/.Xmodmap
 
 # Autostart
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec --no-startup-id sleep 3 && xfce4-power-manager
+exec --no-startup-id xss-lock -- i3lock -n -c 000000
+exec --no-startup-id sleep 3 && mate-power-manager
 exec --no-startup-id dropbox
 exec --no-startup-id thunar --daemon
 exec --no-startup-id nm-applet

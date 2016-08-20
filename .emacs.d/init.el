@@ -11,7 +11,7 @@
 
 (defvar prelude-packages
   '(molokai-theme evil evil-org intero exec-path-from-shell benchmark-init
-    company tide)
+    company tide ensime scala-mode yaml-mode)
   "A list of packages to ensure are installed at launch.")
 
 (defun prelude-packages-installed-p ()
