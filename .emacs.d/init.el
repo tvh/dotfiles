@@ -11,7 +11,7 @@
 
 (defvar prelude-packages
   '(molokai-theme evil evil-org intero exec-path-from-shell benchmark-init
-    company tide ensime scala-mode yaml-mode)
+    company tide ensime scala-mode yaml-mode rust-mode racer)
   "A list of packages to ensure are installed at launch.")
 
 (defun prelude-packages-installed-p ()
@@ -91,6 +91,12 @@
   ;; install it separately via package-install
   ;; `M-x package-install [ret] company`
   (company-mode +1))
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "tsx" (file-name-extension buffer-file-name))
+              (setup-tide-mode))))
 
 ;; aligns annotation to the right hand side
 (setq company-tooltip-align-annotations t)
@@ -102,3 +108,27 @@
 
 ;; JS
 (add-hook 'js2-mode-hook #'setup-tide-mode)
+
+;; Rust
+(add-hook 'rust-mode-hook #'racer-mode)
+(add-hook 'racer-mode-hook #'eldoc-mode)
+(add-hook 'racer-mode-hook #'company-mode)
+(require 'rust-mode)
+(define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+(setq company-tooltip-align-annotations t)
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (0xc yaml-mode tide molokai-theme intero exec-path-from-shell evil-org ensime benchmark-init web-mode))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
