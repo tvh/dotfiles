@@ -23,14 +23,15 @@ Plug 'bling/vim-airline'
 Plug 'tomasr/molokai'
 
 " Haskell
-Plug 'neovimhaskell/haskell-vim', { 'for': ['haskell','cabal'] }
-Plug 'Shougo/vimproc.vim', { 'do': 'make' } | Plug 'eagletmt/ghcmod-vim', { 'for': 'haskell' }
+Plug 'parsonsmatt/intero-neovim', { 'for': 'haskell' }
 Plug 'eagletmt/neco-ghc', { 'for': 'haskell' }
 Plug 'Twinside/vim-hoogle', { 'for': 'haskell' }
-Plug 'mpickering/hlint-refactor-vim', { 'for': 'haskell' }
 
 " Scala
 Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
+
+" Python
+Plug 'zchee/deoplete-jedi', { 'for': 'python' }
 
 "Markdown
 Plug 'vim-pandoc/vim-pandoc', { 'for': 'markdown' }
@@ -38,9 +39,6 @@ Plug 'vim-pandoc/vim-pandoc-syntax', { 'for': 'markdown' }
 
 "Rust
 Plug 'rust-lang/rust.vim', { 'for': 'rust' }
-
-"LaTeX
-Plug 'git://git.code.sf.net/p/vim-latex/vim-latex', { 'for': 'latex' }
 
 "JavaScript
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
