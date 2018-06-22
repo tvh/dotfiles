@@ -10,8 +10,8 @@
 (require 'cl)
 
 (defvar prelude-packages
-  '(molokai-theme evil evil-org intero exec-path-from-shell benchmark-init
-    company tide ensime scala-mode yaml-mode rust-mode racer)
+  '(molokai-theme evil evil-org dante exec-path-from-shell benchmark-init
+    company tide ensime scala-mode yaml-mode rust-mode racer evil-magit)
   "A list of packages to ensure are installed at launch.")
 
 (defun prelude-packages-installed-p ()
@@ -56,6 +56,9 @@
 ;; Vim Keybindings
 (evil-mode t)
 
+;;git
+(require 'evil-magit)
+
 ;; Enable mouse support
 (unless window-system
   (require 'mouse)
@@ -78,7 +81,7 @@
   (lambda ()
     (setq whitespace-line-column 100)
     ))
-(add-hook 'haskell-mode-hook 'intero-mode)
+(add-hook 'haskell-mode-hook 'dante-mode)
 
 ;; Typescript
 (defun setup-tide-mode ()
@@ -125,7 +128,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (0xc yaml-mode tide molokai-theme intero exec-path-from-shell evil-org ensime benchmark-init web-mode))))
+    (evil-magit magit dante csv-mode hledger-mode markdown-mode 0xc yaml-mode tide molokai-theme intero exec-path-from-shell evil-org ensime benchmark-init web-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
