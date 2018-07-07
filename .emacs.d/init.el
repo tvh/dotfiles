@@ -82,6 +82,7 @@
     (setq whitespace-line-column 100)
     ))
 (add-hook 'haskell-mode-hook 'dante-mode)
+(add-hook 'haskell-mode-hook 'flycheck-mode)
 
 ;; Typescript
 (defun setup-tide-mode ()
